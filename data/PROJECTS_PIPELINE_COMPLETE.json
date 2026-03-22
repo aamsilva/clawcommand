@@ -1,0 +1,229 @@
+{
+  "timestamp": "2026-03-22T11:40:00Z",
+  "ceo": "Henry v3.0",
+  "total_projects": 20,
+  "pipeline_status": "CONSOLIDATED",
+  "source": "PROJECTS_MIGRATION_ANALYSIS.md + Workflows",
+  "projects": {
+    "TIER_1_ACTIVE_PRODUCTION": [
+      {
+        "id": "HEX-001",
+        "name": "alpha-hunter",
+        "description": "Trading algorítmico 24/7",
+        "status": "production",
+        "size": "145MB",
+        "priority": "critical",
+        "type": "trading",
+        "location": "OS (SSD)",
+        "agents": ["Sanjay"],
+        "revenue": "active"
+      },
+      {
+        "id": "HEX-002",
+        "name": "cofidis-frauddetector",
+        "description": "Sistema de deteção de fraude Cofidis",
+        "status": "active",
+        "size": "300MB",
+        "priority": "high",
+        "type": "client_project",
+        "location": "OS (SSD)",
+        "client": "Cofidis",
+        "agents": ["Ian", "Analyst"],
+        "revenue": "active"
+      },
+      {
+        "id": "HEX-003",
+        "name": "mordomo-edp",
+        "description": "Automação Home EDP (produção)",
+        "status": "production",
+        "size": "51MB",
+        "priority": "high",
+        "type": "automation",
+        "location": "OS (SSD)",
+        "agents": ["Jeeves"],
+        "revenue": "internal_savings"
+      },
+      {
+        "id": "HEX-004",
+        "name": "vigilhome-v2",
+        "description": "Sistema de vigilância vídeo v2",
+        "status": "production",
+        "size": "1.3GB",
+        "priority": "high",
+        "type": "security",
+        "location": "OS (SSD) - avaliar",
+        "agents": ["Vigil"],
+        "revenue": "internal_security"
+      },
+      {
+        "id": "HEX-005",
+        "name": "video-surveillance",
+        "description": "Sistema de video vigilância",
+        "status": "production",
+        "size": "1.7GB",
+        "priority": "high",
+        "type": "security",
+        "location": "OS (SSD) - avaliar",
+        "agents": ["Vigil"],
+        "revenue": "internal_security"
+      }
+    ],
+    "TIER_2_ACTIVE_DEVELOPMENT": [
+      {
+        "id": "HEX-006",
+        "name": "ai-productivity-saas",
+        "description": "Produtividade AI SaaS",
+        "status": "active_development",
+        "size": "651MB",
+        "priority": "medium",
+        "type": "product",
+        "location": "OS (SSD)",
+        "agents": ["Mason", "Analyst"],
+        "revenue": "future_saas"
+      },
+      {
+        "id": "HEX-007",
+        "name": "local-agent-framework",
+        "description": "Framework core de agentes",
+        "status": "active_development",
+        "size": "67MB",
+        "priority": "high",
+        "type": "framework",
+        "location": "OS (SSD)",
+        "agents": ["Sanjay", "Henry"],
+        "revenue": "infrastructure"
+      },
+      {
+        "id": "HEX-008",
+        "name": "pack-daily-news",
+        "description": "Automatização daily news",
+        "status": "active",
+        "size": "1.1MB",
+        "priority": "medium",
+        "type": "automation",
+        "location": "OS (SSD)",
+        "agents": ["Scout"],
+        "revenue": "internal_intel"
+      }
+    ],
+    "TIER_3_PIPELINE_NEW": [
+      {
+        "id": "HEX-009",
+        "name": "ATLegalAI",
+        "description": "Legal Document Analysis Platform",
+        "status": "pipeline",
+        "budget": 50000,
+        "priority": "high",
+        "type": "product",
+        "agents": ["Sarah", "Ian", "Sanjay"],
+        "revenue": "future_product"
+      },
+      {
+        "id": "HEX-010",
+        "name": "ATDocGenAI",
+        "description": "Document Generation Platform",
+        "status": "pipeline",
+        "budget": 30000,
+        "priority": "high",
+        "type": "product",
+        "agents": ["Mason", "Analyst", "Sanjay"],
+        "revenue": "future_product"
+      },
+      {
+        "id": "HEX-011",
+        "name": "Company Scouting",
+        "description": "Competitive Intelligence Platform",
+        "status": "pipeline",
+        "budget": 40000,
+        "priority": "medium",
+        "type": "product",
+        "agents": ["Scout", "Mason", "Analyst"],
+        "revenue": "future_product"
+      },
+      {
+        "id": "HEX-012",
+        "name": "Micro-Learning",
+        "description": "Corporate Training Platform",
+        "status": "pipeline",
+        "budget": 25000,
+        "priority": "medium",
+        "type": "product",
+        "agents": ["Analyst", "Archivist", "Watcher"],
+        "revenue": "future_product"
+      }
+    ],
+    "TIER_4_INACTIVE_MAINTENANCE": [
+      {
+        "id": "HEX-013",
+        "name": "ai-authentication-system",
+        "description": "Sprint terminado - avaliar",
+        "status": "inactive",
+        "size": "124K",
+        "action": "archive_or_delete"
+      },
+      {
+        "id": "HEX-014",
+        "name": "audio-automation",
+        "description": "Inativo - avaliar",
+        "status": "inactive",
+        "size": "288K",
+        "action": "archive_or_delete"
+      },
+      {
+        "id": "HEX-015",
+        "name": "data-analyst",
+        "description": "Verificar uso",
+        "status": "unknown",
+        "size": "848K",
+        "action": "evaluate"
+      },
+      {
+        "id": "HEX-016",
+        "name": "scout-web",
+        "description": "Possível mover para disco1tb",
+        "status": "maintenance",
+        "size": "60K",
+        "action": "archive"
+      },
+      {
+        "id": "HEX-017",
+        "name": "archivist",
+        "description": "Possível mover para disco1tb",
+        "status": "maintenance",
+        "size": "52K",
+        "action": "archive"
+      },
+      {
+        "id": "HEX-018",
+        "name": "github-watcher",
+        "description": "Possível mover para disco1tb",
+        "status": "maintenance",
+        "size": "20K",
+        "action": "archive"
+      },
+      {
+        "id": "HEX-019",
+        "name": "dev-queue",
+        "description": "Possível mover para disco1tb",
+        "status": "maintenance",
+        "size": "20K",
+        "action": "archive"
+      },
+      {
+        "id": "HEX-020",
+        "name": "sp500-tracker",
+        "description": "Possível mover para disco1tb",
+        "status": "maintenance",
+        "size": "16K",
+        "action": "archive"
+      }
+    ]
+  },
+  "summary": {
+    "production": 5,
+    "active_dev": 3,
+    "pipeline_new": 4,
+    "inactive": 8,
+    "total_budget_pipeline": 145000
+  }
+}
