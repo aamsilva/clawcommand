@@ -5,7 +5,7 @@
  */
 
 const { ClawCommandEngine } = require('./src/core/engine');
-const { LLMGateway } = require('./src/execution/llm-gateway');
+const { SyntheticClient } = require('./src/execution/synthetic-client');
 
 // Test configuration
 const TEST_CONFIG = {
@@ -34,8 +34,8 @@ async function runParallelismTest() {
   
   await engine.init();
   
-  // Initialize LLM Gateway
-  const llmGateway = new LLMGateway(engine, {
+  // Initialize Synthetic Client (bypasses unstable Gateway)
+  const syntheticClient = new SyntheticClient({
     maxConcurrent: TEST_CONFIG.maxConcurrent,
     requestTimeout: 30000,
     retryAttempts: 2
@@ -52,7 +52,7 @@ async function runParallelismTest() {
   
   // Monitor stats every 100ms
   const statsInterval = setInterval(() => {
-    const stats = llmGateway.getStats();
+    const stats = syntheticClient.getStats();
     results.statsSnapshots.push({
       timestamp: Date.now(),
       active: stats.activeRequests,
@@ -91,9 +91,9 @@ async function runParallelismTest() {
     try {
       const startTime = Date.now();
       
-      // This should go through OpenClaw Gateway -> synthetic.new
-      const result = await llmGateway.callLLM(test.prompt, {
-        maxTokens: 100,  // Small to keep test fast
+      // Direct API call to synthetic.new with connection pooling
+      const result = await syntheticClient.generate(test.prompt, {
+        maxTokens: 50,  // Small to keep test fast
         temperature: 0.7
       });
       
@@ -204,7 +204,7 @@ async function runParallelismTest() {
   }
   
   // Cleanup
-  await llmGateway.shutdown();
+  await syntheticClient.shutdown();
   await engine.shutdown();
   
   console.log('\n✅ Test completed\n');

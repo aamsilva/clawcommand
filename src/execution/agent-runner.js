@@ -27,8 +27,10 @@ class AgentRunner extends EventEmitter {
     this.taskQueue = [];
     
     // Initialize Synthetic Client for DIRECT API calls (bypasses unstable Gateway)
+    // Pro tier: $60/month = 2 packs = 2 concurrent requests per model
+    // Rate limit: 135 msgs/5h per pack × 2 = 270 msgs/5h = ~54 msgs/hour
     this.syntheticClient = new SyntheticClient({
-      maxConcurrent: config.maxConcurrentLLM || 5, // Respect synthetic.new limits
+      maxConcurrent: config.maxConcurrentLLM || 2, // Pro tier: 2 concurrent
       requestTimeout: config.llmRequestTimeout || 120000,
       retryAttempts: config.llmRetryAttempts || 3
     });

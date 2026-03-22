@@ -14,7 +14,7 @@ class SyntheticClient extends EventEmitter {
     this.config = {
       apiHost: config.apiHost || 'api.synthetic.new',
       apiVersion: config.apiVersion || 'v2',
-      maxConcurrent: config.maxConcurrent || 5,
+      maxConcurrent: config.maxConcurrent || 2,  // Pro tier: $60/month = 2 packs = 2 concurrent
       requestTimeout: config.requestTimeout || 120000,
       retryAttempts: config.retryAttempts || 3,
       retryDelay: config.retryDelay || 2000,
