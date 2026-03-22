@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0f1a;
+            color: #e2e8f0;
+        }
+        .header {
+            background: linear-gradient(135deg, #051C2C 0%, #0f172a 100%);
+            padding: 20px 40px;
+            border-bottom: 3px solid #2251FF;
+        }
+        .header h1 { font-size: 28px; }
+        .container { padding: 30px 40px; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            border-top: 3px solid #2251FF;
+        }
+        .card h3 { color: #94a3b8; font-size: 12px; margin-bottom: 10px; }
+        .card .value { font-size: 36px; font-weight: bold; }
+        .status { color: #10b981; }
+        #agents, #projects { margin-top: 30px; }
+        table {
+            width: 100%;
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        th, td { padding: 12px; text-align: left; }
+        th { background: #051C2C; }
+        tr:nth-child(even) { background: #0f172a; }
+        .loading { text-align: center; padding: 40px; color: #64748b; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🐾 <%= title %></h1>
+        <div style="color: #94a3b8;"><%= company %></div>
+    </div>
+
+    <div class="container">
+        <div class="grid">
+            <div class="card">
+                <h3>Active Agents</h3>
+                <div class="value status" id="agent-count">--</div>
+            </div>
+            <div class="card">
+                <h3>Active Projects</h3>
+                <div class="value" id="project-count">--</div>
+            </div>
+            <div class="card">
+                <h3>System Status</h3>
+                <div class="value status">● OPERATIONAL</div>
+            </div>
+            <div class="card">
+                <h3>Heartbeats (24h)</h3>
+                <div class="value" id="heartbeat-count">--</div>
+            </div>
+        </div>
+
+        <div id="agents">
+            <h2 style="margin-bottom: 15px;">👥 Agent Swarm</h2>
+            <div class="loading">Loading agents...</div>
+        </div>
+
+        <div id="projects">
+            <h2 style="margin-bottom: 15px;">🎯 Active Projects</h2>
+            <div class="loading">Loading projects...</div>
+        </div>
+    </div>
+
+    <script>
+        const ws = new WebSocket(`ws://${window.location.host}`);
+        
+        ws.onopen = () => console.log('Connected to dashboard');
+        
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === 'initial') {
+                updateDashboard(data);
+            }
+        };
+
+        async function loadData() {
+            try {
+                const [stats, agents, projects] = await Promise.all([
+                    fetch('/api/stats').then(r => r.json()),
+                    fetch('/api/agents').then(r => r.json()),
+                    fetch('/api/projects').then(r => r.json())
+                ]);
+                
+                document.getElementById('agent-count').textContent = stats.activeAgents;
+                document.getElementById('project-count').textContent = stats.totalProjects;
+                document.getElementById('heartbeat-count').textContent = stats.heartbeats;
+                
+                renderAgents(agents);
+                renderProjects(projects);
+            } catch (err) {
+                console.error('Error loading data:', err);
+            }
+        }
+
+        function renderAgents(agents) {
+            const container = document.getElementById('agents');
+            container.innerHTML = `
+                <h2 style="margin-bottom: 15px;">👥 Agent Swarm (${agents.length})</h2>
+                <table>
+                    <thead>
+                        <tr><th>Name</th><th>Role</th><th>Status</th><th>Tasks</th><th>Budget</th></tr>
+                    </thead>
+                    <tbody>
+                        ${agents.map(a => `
+                            <tr>
+                                <td><strong>${a.name}</strong></td>
+                                <td>${a.title}</td>
+                                <td style="color: ${a.status === 'idle' ? '#10b981' : '#f59e0b'}">${a.status}</td>
+                                <td>${a.activeTasks}</td>
+                                <td>€${a.budget_used || 0} / €${a.budget_limit}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function renderProjects(projects) {
+            const container = document.getElementById('projects');
+            container.innerHTML = `
+                <h2 style="margin-bottom: 15px;">🎯 Active Projects (${projects.length})</h2>
+                <table>
+                    <thead>
+                        <tr><th>Project</th><th>Status</th><th>Progress</th><th>Budget</th></tr>
+                    </thead>
+                    <tbody>
+                        ${projects.map(p => `
+                            <tr>
+                                <td><strong>${p.title}</strong></td>
+                                <td>${p.status}</td>
+                                <td>
+                                    <div style="background: #334155; height: 8px; border-radius: 4px;">
+                                        <div style="background: #2251FF; height: 100%; border-radius: 4px; width: ${p.progress || 0}%"></div>
+                                    </div>
+                                </td>
+                                <td>€${p.budget_spent || 0} / €${p.budget_allocated}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function updateDashboard(data) {
+            document.getElementById('agent-count').textContent = data.stats.activeAgents;
+            document.getElementById('project-count').textContent = data.stats.totalProjects;
+            renderAgents(data.agents);
+            renderProjects(data.projects);
+        }
+
+        loadData();
+        setInterval(loadData, 5000); // Refresh every 5 seconds
+    </script>
+</body>
+</html>

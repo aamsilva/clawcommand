@@ -7,6 +7,13 @@
 
 require('dotenv').config();
 const { ClawCommandEngine } = require('./src/core/engine');
+const { AgencyManager } = require('./src/agency/agency-manager');
+const { MemoryLayer } = require('./src/memory/memory-layer');
+const { MessageBus } = require('./src/comm/message-bus');
+const { ParallelScheduler } = require('./src/scheduler/parallel-scheduler');
+const { AgentRunner } = require('./src/execution/agent-runner');
+const { AutoRecovery } = require('./src/recovery/auto-resume');
+const { DashboardServer } = require('./src/dashboard/server');
 const { ClawCommandBot } = require('./src/discord/bot');
 
 // Configuration
@@ -50,8 +57,47 @@ async function main() {
     // Initialize Core Engine
     console.log('🔧 Initializing ClawCommand Engine...');
     const engine = new ClawCommandEngine(config);
-    
     await engine.init();
+    
+    // Initialize Memory Layer
+    console.log('🧠 Initializing Memory Layer...');
+    engine.memoryLayer = new MemoryLayer(engine, config);
+    await engine.memoryLayer.init();
+    
+    // Initialize Agency Manager
+    console.log('🏢 Initializing Agency Manager...');
+    engine.agencyManager = new AgencyManager(engine, config);
+    
+    // Initialize Message Bus
+    console.log('📡 Initializing Message Bus...');
+    engine.messageBus = new MessageBus(engine, config);
+    
+    // Initialize Scheduler
+    console.log('⚡ Initializing Parallel Scheduler...');
+    engine.scheduler = new ParallelScheduler(engine, config);
+    
+    // Initialize Agent Runner (REAL EXECUTION)
+    console.log('🚀 Initializing Agent Runner (REAL)...');
+    engine.agentRunner = new AgentRunner(engine, config);
+    
+    // Initialize Auto Recovery
+    console.log('🔄 Initializing Auto Recovery...');
+    engine.autoRecovery = new AutoRecovery(engine, config);
+    await engine.autoRecovery.init();
+    
+    // Check if recovery needed
+    if (await engine.autoRecovery.checkRecoveryNeeded()) {
+      console.log('📂 Previous session detected, performing auto-recovery...');
+      await engine.autoRecovery.performRecovery();
+    }
+    
+    // Initialize Dashboard Server
+    console.log('🌐 Initializing Dashboard Server...');
+    engine.dashboard = new DashboardServer(engine, {
+      port: config.dashboardPort || 3000,
+      host: config.dashboardHost || 'localhost'
+    });
+    await engine.dashboard.start();
     
     // Initialize Discord Bot (if token provided)
     let bot = null;
@@ -59,6 +105,7 @@ async function main() {
       console.log('🤖 Initializing Discord Bot...');
       bot = new ClawCommandBot(engine, config);
       await bot.start();
+      engine.discordBot = bot;
     } else {
       console.log('⚠️  Discord token not provided - bot disabled');
       console.log('   Set DISCORD_TOKEN in .env to enable CEO interface');
@@ -67,30 +114,52 @@ async function main() {
     // Seed initial data if empty
     await seedInitialData(engine);
     
+    // Connect message bus events
+    engine.messageBus.on('message:sent', (msg) => {
+      engine.dashboard?.broadcast({ type: 'message', data: msg });
+    });
+    
+    engine.messageBus.on('handoff:completed', (handoff) => {
+      engine.dashboard?.broadcast({ type: 'handoff', data: handoff });
+    });
+    
     // Setup graceful shutdown
     process.on('SIGINT', async () => {
       console.log('\n🛑 Received SIGINT, shutting down gracefully...');
-      if (bot) await bot.shutdown();
-      await engine.shutdown();
-      process.exit(0);
+      await shutdown(engine, bot);
     });
     
     process.on('SIGTERM', async () => {
       console.log('\n🛑 Received SIGTERM, shutting down gracefully...');
-      if (bot) await bot.shutdown();
-      await engine.shutdown();
-      process.exit(0);
+      await shutdown(engine, bot);
     });
     
-    console.log('\n✅ ClawCommand is running!');
-    console.log('📊 Dashboard: http://localhost:3000 (if enabled)');
+    console.log('\n✅ ClawCommand v2.0 is running!');
+    console.log('📊 Dashboard: http://localhost:3000');
     console.log('💬 Discord: #system-cortex (if enabled)');
+    console.log('🤖 Agents: 12 ready for real execution');
     console.log('\nPress Ctrl+C to stop\n');
     
   } catch (err) {
     console.error('❌ Fatal error:', err);
     process.exit(1);
   }
+}
+
+async function shutdown(engine, bot) {
+  // Save state
+  if (engine.autoRecovery) {
+    await engine.autoRecovery.createBackup();
+  }
+  
+  // Stop components
+  if (bot) await bot.shutdown();
+  if (engine.dashboard) await engine.dashboard.stop();
+  if (engine.agentRunner) await engine.agentRunner.shutdown();
+  if (engine.scheduler) engine.scheduler.stop();
+  await engine.shutdown();
+  
+  process.exit(0);
 }
 
 /**
