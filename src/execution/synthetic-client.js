@@ -56,7 +56,7 @@ class SyntheticClient extends EventEmitter {
         options: {
           maxTokens: options.maxTokens || 2000,
           temperature: options.temperature || 0.7,
-          model: options.model || 'synthetic/hf:moonshotai/Kimi-K2.5',
+          model: options.model || 'hf:moonshotai/Kimi-K2.5',
           stream: false,
           ...options
         },
@@ -164,6 +164,7 @@ class SyntheticClient extends EventEmitter {
 
   /**
    * Call synthetic.new API directly via HTTPS
+   * Uses Anthropic-compatible endpoint
    */
   async callAPI(request) {
     return new Promise((resolve, reject) => {
@@ -172,6 +173,7 @@ class SyntheticClient extends EventEmitter {
         return;
       }
 
+      // Anthropic-compatible request format
       const postData = JSON.stringify({
         model: request.options.model,
         messages: [
@@ -179,17 +181,18 @@ class SyntheticClient extends EventEmitter {
         ],
         max_tokens: request.options.maxTokens,
         temperature: request.options.temperature,
-        stream: request.options.stream
+        stream: false
       });
 
       const options = {
         hostname: this.config.apiHost,
         port: 443,
-        path: `/${this.config.apiVersion}/chat/completions`,
+        path: `/anthropic/v1/messages`,  // Correct endpoint for synthetic.new
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.apiKey}`,
+          'anthropic-version': '2023-06-01',
           'Content-Length': Buffer.byteLength(postData)
         },
         timeout: this.config.requestTimeout
@@ -207,7 +210,12 @@ class SyntheticClient extends EventEmitter {
             const response = JSON.parse(data);
             
             if (res.statusCode === 200) {
-              resolve(response.choices?.[0]?.message?.content || response);
+              // Anthropic format: content[0].text
+              const content = response.content?.[0]?.text || 
+                             response.completion || 
+                             response.choices?.[0]?.message?.content ||
+                             JSON.stringify(response);
+              resolve(content);
             } else {
               reject(new Error(`API Error ${res.statusCode}: ${response.error?.message || data}`));
             }
