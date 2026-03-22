@@ -1,0 +1,95 @@
+{
+  "timestamp": "2026-03-22T11:05:00Z",
+  "ceo": "Henry v3.0",
+  "pipeline_status": "ACTIVE",
+  "projects": [
+    {
+      "id": "HEX-PROJ-001",
+      "name": "Cofidis Fraud Detector v2.0",
+      "description": "Sistema avançado de deteção de fraude para Cofidis usando machine learning e análise comportamental",
+      "client": "Cofidis",
+      "budget": 75000,
+      "status": "active",
+      "priority": "high",
+      "assigned_agents": ["Ian", "Analyst", "Sanjay"],
+      "phases": [
+        {"phase": 1, "name": "Data Pipeline", "status": "in_progress", "eta": "2026-03-23"},
+        {"phase": 2, "name": "ML Model Training", "status": "pending", "eta": "2026-03-25"},
+        {"phase": 3, "name": "API Integration", "status": "pending", "eta": "2026-03-27"},
+        {"phase": 4, "name": "Testing", "status": "pending", "eta": "2026-03-29"},
+        {"phase": 5, "name": "Deployment", "status": "pending", "eta": "2026-03-30"}
+      ],
+      "source": "client_request",
+      "created_at": "2026-03-22T11:00:00Z",
+      "expected_completion": "2026-03-30"
+    },
+    {
+      "id": "HEX-PROJ-002",
+      "name": "Cork Supply Digital Transformation",
+      "description": "Plataforma digital completa para gestão de fornecimento de cortiça, incluindo tracking, CRM e análise preditiva",
+      "client": "Cork Supply",
+      "budget": 120000,
+      "status": "active",
+      "priority": "high",
+      "assigned_agents": ["Sarah", "Mason", "Scout", "Archivist"],
+      "phases": [
+        {"phase": 1, "name": "Requirements Analysis", "status": "in_progress", "eta": "2026-03-24"},
+        {"phase": 2, "name": "Platform Architecture", "status": "pending", "eta": "2026-03-27"},
+        {"phase": 3, "name": "Development Sprint 1", "status": "pending", "eta": "2026-04-05"},
+        {"phase": 4, "name": "Integration Testing", "status": "pending", "eta": "2026-04-10"},
+        {"phase": 5, "name": "Go-Live", "status": "pending", "eta": "2026-04-15"}
+      ],
+      "source": "client_request",
+      "created_at": "2026-03-22T11:00:00Z",
+      "expected_completion": "2026-04-15"
+    },
+    {
+      "id": "HEX-PROJ-003",
+      "name": "Hexa Labs Internal Automation Suite",
+      "description": "Automação completa de processos internos: facturação, reporting, gestão de projetos e comunicação",
+      "client": "Hexa Labs (Internal)",
+      "budget": 45000,
+      "status": "active",
+      "priority": "medium",
+      "assigned_agents": ["Jeeves", "Sally", "Watcher"],
+      "phases": [
+        {"phase": 1, "name": "Process Mapping", "status": "in_progress", "eta": "2026-03-24"},
+        {"phase": 2, "name": "Workflow Automation", "status": "pending", "eta": "2026-03-28"},
+        {"phase": 3, "name": "Dashboard Creation", "status": "pending", "eta": "2026-04-01"},
+        {"phase": 4, "name": "Integration", "status": "pending", "eta": "2026-04-05"},
+        {"phase": 5, "name": "Training & Handover", "status": "pending", "eta": "2026-04-08"}
+      ],
+      "source": "internal_improvement",
+      "created_at": "2026-03-22T11:00:00Z",
+      "expected_completion": "2026-04-08"
+    },
+    {
+      "id": "HEX-PROJ-004",
+      "name": "Alpha Hunter Trading Platform",
+      "description": "Plataforma de trading algorítmico 24/7 com análise de mercado em tempo real e execução autónoma",
+      "client": "Hexa Labs (Trading)",
+      "budget": 60000,
+      "status": "active",
+      "priority": "high",
+      "assigned_agents": ["Sanjay", "Scout", "Mason"],
+      "phases": [
+        {"phase": 1, "name": "Market Data Integration", "status": "in_progress", "eta": "2026-03-25"},
+        {"phase": 2, "name": "Strategy Algorithms", "status": "pending", "eta": "2026-04-01"},
+        {"phase": 3, "name": "Risk Management", "status": "pending", "eta": "2026-04-08"},
+        {"phase": 4, "name": "Backtesting", "status": "pending", "eta": "2026-04-12"},
+        {"phase": 5, "name": "Live Trading", "status": "pending", "eta": "2026-04-15"}
+      ],
+      "source": "strategic_initiative",
+      "created_at": "2026-03-22T11:00:00Z",
+      "expected_completion": "2026-04-15"
+    }
+  ],
+  "summary": {
+    "total_budget": 300000,
+    "active_projects": 4,
+    "high_priority": 3,
+    "medium_priority": 1,
+    "earliest_completion": "2026-03-30",
+    "latest_completion": "2026-04-15"
+  }
+}
