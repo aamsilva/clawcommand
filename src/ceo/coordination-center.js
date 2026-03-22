@@ -8,6 +8,7 @@ const { EventEmitter } = require('events');
 const { ClawCommandEngine } = require('../core/engine');
 const { ChannelMonitor } = require('../ingestion/channel-monitor');
 const { SyntheticClient } = require('../execution/synthetic-client');
+const { HourlyReporter } = require('./hourly-reporter');
 
 class CEOCoordinationCenter extends EventEmitter {
   constructor() {
@@ -62,7 +63,11 @@ class CEOCoordinationCenter extends EventEmitter {
       maxConcurrent: 2, // Pro tier
       requestTimeout: 120000
     });
-    console.log('✅ Synthetic client connected\n');
+    console.log('✅ Synthetic client connected');
+
+    // 4. Initialize Hourly Reporter (Board request)
+    this.hourlyReporter = new HourlyReporter(this);
+    console.log('✅ Hourly reporter ready\n');
     
     // 4. Import existing data
     await this.importExistingData();
@@ -125,8 +130,10 @@ class CEOCoordinationCenter extends EventEmitter {
     // Immediate first runs
     this.executePendingProjects();
     this.processNewIdeas();
-    
-    console.log('✅ All autonomous loops started\n');
+
+    // 5. Start Hourly Reporting (Board directive)
+    this.hourlyReporter.start();
+    console.log('✅ Hourly reporting active (Board directive)\n');
   }
 
   /**
