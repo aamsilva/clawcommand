@@ -1,7 +1,7 @@
 /**
  * Agent Runner - Real Execution Engine
  * Spawns actual agent processes using child_process
- * Integrates with LLM for intelligent decisions
+ * Integrates with LLM for intelligent decisions via OpenClaw Gateway
  */
 
 const { spawn } = require('child_process');
@@ -9,6 +9,7 @@ const { Worker, isMainThread, parentPort, workerData } = require('worker_threads
 const path = require('path');
 const fs = require('fs').promises;
 const EventEmitter = require('events');
+const { LLMGateway } = require('./llm-gateway');
 
 class AgentRunner extends EventEmitter {
   constructor(engine, config = {}) {
@@ -18,7 +19,6 @@ class AgentRunner extends EventEmitter {
       maxConcurrentAgents: config.maxConcurrentAgents || 8,
       agentTimeout: config.agentTimeout || 1800000, // 30 min
       useWorkerThreads: config.useWorkerThreads !== false,
-      llmProvider: config.llmProvider || 'openclaw', // 'openclaw', 'openai', 'anthropic'
       ...config
     };
     
@@ -26,7 +26,15 @@ class AgentRunner extends EventEmitter {
     this.workerPool = new Map();
     this.taskQueue = [];
     
+    // Initialize LLM Gateway for synthetic.new routing through OpenClaw
+    this.llmGateway = new LLMGateway(engine, {
+      maxConcurrent: config.maxConcurrentLLM || 5, // Respect synthetic.new limits
+      requestTimeout: config.llmRequestTimeout || 120000,
+      retryAttempts: config.llmRetryAttempts || 3
+    });
+    
     console.log('🚀 Agent Runner initialized (REAL EXECUTION)');
+    console.log('🌐 LLM Gateway: All calls route through OpenClaw -> synthetic.new');
   }
 
   /**
@@ -284,63 +292,35 @@ class AgentRunner extends EventEmitter {
   }
 
   /**
-   * Call LLM for intelligent processing
+   * Call LLM through OpenClaw Gateway
+   * ALL calls route through synthetic.new via OpenClaw with connection pooling
    */
-  async callLLM(prompt) {
-    // Use OpenClaw Gateway if available
-    if (this.config.llmProvider === 'openclaw' && this.engine.ws) {
-      return this.callOpenClawLLM(prompt);
+  async callLLM(prompt, options = {}) {
+    try {
+      // Use LLM Gateway with connection pooling
+      const result = await this.llmGateway.callLLM(prompt, options);
+      return result;
+    } catch (err) {
+      console.error('❌ LLM call failed:', err.message);
+      
+      // Re-throw to let caller handle failure
+      // NO MOCK FALLBACK - ensures we never silently use fake data
+      throw new Error(`LLM request failed: ${err.message}`);
     }
-    
-    // Fallback to mock for now (would integrate real API)
-    console.log('🤖 LLM Call (mock):', prompt.substring(0, 100) + '...');
-    
-    // Simulate LLM response
-    return {
-      response: `Analysis complete. Based on the context provided, I recommend proceeding with the task.`,
-      reasoning: 'Analyzed past decisions and current context.',
-      confidence: 0.87
-    };
   }
 
   /**
-   * Call LLM via OpenClaw Gateway
+   * Get LLM Gateway statistics
    */
-  async callOpenClawLLM(prompt) {
-    return new Promise((resolve, reject) => {
-      const requestId = `llm_${Date.now()}`;
-      
-      const message = {
-        type: 'llm_request',
-        id: requestId,
-        prompt: prompt,
-        maxTokens: 2000,
-        temperature: 0.7
-      };
+  getLLMStats() {
+    return this.llmGateway.getStats();
+  }
 
-      if (this.engine.ws.readyState === 1) {
-        this.engine.ws.send(JSON.stringify(message));
-        
-        const handler = (data) => {
-          try {
-            const response = JSON.parse(data);
-            if (response.requestId === requestId) {
-              this.engine.ws.removeListener('message', handler);
-              resolve(response.result);
-            }
-          } catch (e) {}
-        };
-        
-        this.engine.ws.on('message', handler);
-        
-        setTimeout(() => {
-          this.engine.ws.removeListener('message', handler);
-          reject(new Error('LLM request timeout'));
-        }, 60000);
-      } else {
-        reject(new Error('OpenClaw not connected'));
-      }
-    });
+  /**
+   * Check if LLM Gateway is healthy
+   */
+  isLLMHealthy() {
+    return this.llmGateway.isHealthy();
   }
 
   /**
@@ -429,6 +409,11 @@ Provide a comprehensive response with clear next steps.
    */
   async shutdown() {
     console.log('🛑 Shutting down Agent Runner...');
+    
+    // Shutdown LLM Gateway first
+    if (this.llmGateway) {
+      await this.llmGateway.shutdown();
+    }
     
     for (const [id, process] of this.activeProcesses) {
       try {
