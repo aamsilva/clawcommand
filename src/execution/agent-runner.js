@@ -9,7 +9,7 @@ const { Worker, isMainThread, parentPort, workerData } = require('worker_threads
 const path = require('path');
 const fs = require('fs').promises;
 const EventEmitter = require('events');
-const { LLMGateway } = require('./llm-gateway');
+const { SyntheticClient } = require('./synthetic-client');
 
 class AgentRunner extends EventEmitter {
   constructor(engine, config = {}) {
@@ -26,15 +26,15 @@ class AgentRunner extends EventEmitter {
     this.workerPool = new Map();
     this.taskQueue = [];
     
-    // Initialize LLM Gateway for synthetic.new routing through OpenClaw
-    this.llmGateway = new LLMGateway(engine, {
+    // Initialize Synthetic Client for DIRECT API calls (bypasses unstable Gateway)
+    this.syntheticClient = new SyntheticClient({
       maxConcurrent: config.maxConcurrentLLM || 5, // Respect synthetic.new limits
       requestTimeout: config.llmRequestTimeout || 120000,
       retryAttempts: config.llmRetryAttempts || 3
     });
     
     console.log('🚀 Agent Runner initialized (REAL EXECUTION)');
-    console.log('🌐 LLM Gateway: All calls route through OpenClaw -> synthetic.new');
+    console.log('🤖 Synthetic Client: Direct API calls to synthetic.new (bypassing unstable Gateway)');
   }
 
   /**
@@ -292,13 +292,14 @@ class AgentRunner extends EventEmitter {
   }
 
   /**
-   * Call LLM through OpenClaw Gateway
-   * ALL calls route through synthetic.new via OpenClaw with connection pooling
+   * Call LLM through Synthetic Client
+   * Direct API calls to synthetic.new with connection pooling
+   * Bypasses unstable OpenClaw Gateway
    */
   async callLLM(prompt, options = {}) {
     try {
-      // Use LLM Gateway with connection pooling
-      const result = await this.llmGateway.callLLM(prompt, options);
+      // Use Synthetic Client for direct API calls
+      const result = await this.syntheticClient.generate(prompt, options);
       return result;
     } catch (err) {
       console.error('❌ LLM call failed:', err.message);
@@ -310,17 +311,17 @@ class AgentRunner extends EventEmitter {
   }
 
   /**
-   * Get LLM Gateway statistics
+   * Get Synthetic Client statistics
    */
   getLLMStats() {
-    return this.llmGateway.getStats();
+    return this.syntheticClient.getStats();
   }
 
   /**
-   * Check if LLM Gateway is healthy
+   * Check if Synthetic Client is healthy
    */
   isLLMHealthy() {
-    return this.llmGateway.isHealthy();
+    return this.syntheticClient.isHealthy();
   }
 
   /**
@@ -410,9 +411,9 @@ Provide a comprehensive response with clear next steps.
   async shutdown() {
     console.log('🛑 Shutting down Agent Runner...');
     
-    // Shutdown LLM Gateway first
-    if (this.llmGateway) {
-      await this.llmGateway.shutdown();
+    // Shutdown Synthetic Client first
+    if (this.syntheticClient) {
+      await this.syntheticClient.shutdown();
     }
     
     for (const [id, process] of this.activeProcesses) {
