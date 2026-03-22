@@ -120,3 +120,37 @@ TypeError: ATLegalAIWorkflow is not a constructor
 ⚠️ OpenClaw Gateway disconnected
 🔌 Connecting to OpenClaw Gateway: ws://127.0.0.1:18789
 ✅ Connected to OpenClaw Gateway
+⚠️ OpenClaw Gateway disconnected
+🔌 Connecting to OpenClaw Gateway: ws://127.0.0.1:18789
+✅ Connected to OpenClaw Gateway
+⚠️ OpenClaw Gateway disconnected
+🔌 Connecting to OpenClaw Gateway: ws://127.0.0.1:18789
+✅ Connected to OpenClaw Gateway
+⚠️ OpenClaw Gateway disconnected
+🔌 Connecting to OpenClaw Gateway: ws://127.0.0.1:18789
+✅ Connected to OpenClaw Gateway
+⚠️ OpenClaw Gateway disconnected
+🔌 Connecting to OpenClaw Gateway: ws://127.0.0.1:18789
+✅ Connected to OpenClaw Gateway
+⚠️ OpenClaw Gateway disconnected
+🔌 Connecting to OpenClaw Gateway: ws://127.0.0.1:18789
+✅ Connected to OpenClaw Gateway
+⚠️ OpenClaw Gateway disconnected
+🔌 Connecting to OpenClaw Gateway: ws://127.0.0.1:18789
+✅ Connected to OpenClaw Gateway
+⚠️ OpenClaw Gateway disconnected
+🔌 Connecting to OpenClaw Gateway: ws://127.0.0.1:18789
+✅ Connected to OpenClaw Gateway
+⚠️ OpenClaw Gateway disconnected
+🔌 Connecting to OpenClaw Gateway: ws://127.0.0.1:18789
+✅ Connected to OpenClaw Gateway
+⚠️ OpenClaw Gateway disconnected
+🔌 Connecting to OpenClaw Gateway: ws://127.0.0.1:18789
+✅ Connected to OpenClaw Gateway
+⚠️ OpenClaw Gateway disconnected
+🔌 Connecting to OpenClaw Gateway: ws://127.0.0.1:18789
+✅ Connected to OpenClaw Gateway
+⚠️ OpenClaw Gateway disconnected
+🔌 Connecting to OpenClaw Gateway: ws://127.0.0.1:18789
+✅ Connected to OpenClaw Gateway
+⚠️ OpenClaw Gateway disconnected

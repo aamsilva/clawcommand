@@ -1,0 +1,53 @@
+{
+  "projects": [
+    {
+      "id": "proj_001",
+      "name": "ATLegalAI",
+      "status": "active",
+      "budget": 50000,
+      "source": "ideation-pipeline-board"
+    },
+    {
+      "id": "proj_002",
+      "name": "ATDocGenAI",
+      "status": "active",
+      "budget": 30000,
+      "source": "ideation-pipeline-board"
+    },
+    {
+      "id": "proj_003",
+      "name": "CompanyScouting",
+      "status": "active",
+      "budget": 40000,
+      "source": "ideation-pipeline-board"
+    },
+    {
+      "id": "proj_004",
+      "name": "MicroLearning",
+      "status": "active",
+      "budget": 25000,
+      "source": "ideation-pipeline-board"
+    }
+  ],
+  "ideas": [
+    {
+      "id": "idea_001",
+      "content": "Implementar auto-healing nos agentes",
+      "source": "learnings",
+      "priority": "high"
+    },
+    {
+      "id": "idea_002",
+      "content": "Melhorar connection pooling",
+      "source": "learnings",
+      "priority": "high"
+    },
+    {
+      "id": "idea_003",
+      "content": "Integrar mais fontes de dados",
+      "source": "learnings",
+      "priority": "medium"
+    }
+  ],
+  "lastUpdate": "2026-03-22T10:45:09.410Z"
+}
