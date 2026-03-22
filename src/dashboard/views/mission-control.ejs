@@ -649,7 +649,14 @@
             
             const board = document.getElementById('kanban-board');
             board.innerHTML = columns.map(col => {
-                const colTasks = tasks.filter(t => t.status === col.id);
+                const colTasks = tasks.filter(t => {
+                    // Map database status to kanban columns
+                    if (col.id === 'backlog') return t.status === 'pending' || t.status === 'backlog';
+                    if (col.id === 'in_progress') return t.status === 'in_progress';
+                    if (col.id === 'review') return t.status === 'review';
+                    if (col.id === 'done') return t.status === 'done' || t.status === 'completed';
+                    return t.status === col.id;
+                });
                 return `
                     <div class="kanban-column">
                         <div class="kanban-header">
