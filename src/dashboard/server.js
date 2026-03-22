@@ -109,6 +109,15 @@ class DashboardServer extends EventEmitter {
       }
     });
 
+    this.app.get('/api/tasks', async (req, res) => {
+      try {
+        const tasks = await this.getTasks();
+        res.json(tasks);
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+    });
+
     this.app.get('/api/resources', async (req, res) => {
       try {
         const resources = this.getResources();
@@ -374,6 +383,25 @@ class DashboardServer extends EventEmitter {
          ORDER BY m.timestamp DESC 
          LIMIT ?`,
         [limit],
+        (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows || []);
+        }
+      );
+    });
+  }
+
+  async getTasks() {
+    return new Promise((resolve, reject) => {
+      this.engine.db.all(
+        `SELECT g.*, 
+                a.name as assignee_name,
+                p.title as project_title
+         FROM goals g
+         LEFT JOIN agents a ON a.id = g.assignee_id
+         LEFT JOIN goals p ON p.id = g.parent_id
+         WHERE g.parent_id IS NOT NULL OR g.assignee_id IS NOT NULL
+         ORDER BY g.created_at DESC`,
         (err, rows) => {
           if (err) reject(err);
           else resolve(rows || []);

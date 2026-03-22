@@ -9,8 +9,8 @@ const { SyntheticClient } = require('./src/execution/synthetic-client');
 
 // Test configuration
 const TEST_CONFIG = {
-  totalRequests: 10,        // Simulate 10 simultaneous agents
-  maxConcurrent: 5,         // Should respect this limit
+  totalRequests: 6,         // Simulate 6 simultaneous agents
+  maxConcurrent: 2,         // Pro tier: $60/month = 2 packs = 2 concurrent
   requestDelay: 100,        // Small delay between starting requests
   testTimeout: 60000        // 1 minute timeout
 };
