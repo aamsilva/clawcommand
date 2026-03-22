@@ -127,7 +127,7 @@ class AutoRecovery {
   async gatherGoalStates() {
     return new Promise((resolve, reject) => {
       this.engine.db.all(
-        `SELECT id, title, status, progress, budget_spent, assignee_id 
+        `SELECT id, title, status, budget_spent, budget_allocated, assignee_id 
          FROM goals 
          WHERE status != 'completed'`,
         (err, rows) => {
